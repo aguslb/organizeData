@@ -16,7 +16,9 @@ class FileOrganizator:
     geopy.geocoders.options.default_ssl_context = ctx
     geolocator = Nominatim(user_agent="FileOrganizator")
     geoDic = {}
-    
+    geoDicNew = {}
+    geoGPSFile = "geoGPSFile.txt"
+
     def __init__(self, errorTimesToTry):
         self.errorTimesToTry = errorTimesToTry
     
@@ -42,10 +44,22 @@ class FileOrganizator:
             fullLocationDict = dict(self.geolocator.reverse(GPSPosition, exactly_one=True).raw)
             locationDict = dict(fullLocationDict['address'])
             locationRet = locationDict['county'] + '_' + locationDict['state'] +'_' + locationDict['country_code']
-            self.geoDic[GPSPosition] = locationRet
+            self.geoDic[GPSPosition] = locationRet 
+            self.geoDicNew[GPSPosition] = locationRet
         else:
             locationRet = self.geoDic[GPSPosition]
         return locationRet
+    
+    def saveGeoGPSDic(self):
+        saveFileGPS = open("data.pkl", "ab")
+        pickle.dump(geoDicNew, saveFileGPS)
+        saveFileGPS.close()
+    
+    def loadGeoGPSDIc(self):
+        gpsFile = open(self.geoGPSFile,"r")
+        self.geoDic = gpsFile.read()
+        dictionary = ast.literal_eval(self.geoDic)
+        gpsFile.close()
     
     def generatePathPatternToCopy(self, jsonResult):
         dataDict = dict(jsonResult[0])
@@ -98,7 +112,11 @@ class FileOrganizator:
             pathToCopy = self.generatePathPatternToCopy(ExifTool().get_metadata(fileMetadataActive))
             newPathFile = goToDir + os.path.sep + pathToCopy + os.path.sep + fileActive
             if self.checkDir(pathToCopy, goToDir):
-                os.rename(fileMetadataActive, newPathFile)
+                if os.path.isfile(newPathFile):
+                    newPathFileCopy = newPathFile_ + str(int(round(time.time() * 1000)))
+                    os.rename(fileMetadataActive, newPathFileCopy)
+                else:
+                    os.rename(fileMetadataActive, newPathFile)
     
     def compareMD5(self):
         try:
@@ -123,10 +141,12 @@ class FileOrganizator:
             s.close()
 
     def startFileOrganizator(self):
+        self.loadGeoGPSDic()
         CopyFiles().md5CheckFile(CopyFiles().getListFilesAndDir(CopyFiles().getHomeBridgePath()),CopyFiles().LOCAL_STR)
         self.compareMD5()
         #CopyFiles().sendAFile(CopyFiles().getHomeBridgePath() + os.path.sep + CopyFiles().succesFile)
         self.moveAndOrganizeEachFile(CopyFiles().getHomeBridgePath())
+        self.saveGeoGPSDic()
         
 p1 = FileOrganizator(2)
 p1.startFileOrganizator()
