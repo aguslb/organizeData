@@ -1,7 +1,10 @@
 import os
+import ast
 import sys
 import ssl
+import time
 import mmap
+import pickle
 import hashlib
 import certifi
 import geopy.geocoders
@@ -52,14 +55,14 @@ class FileOrganizator:
     
     def saveGeoGPSDic(self):
         saveFileGPS = open("data.pkl", "ab")
-        pickle.dump(geoDicNew, saveFileGPS)
+        pickle.dump(self.geoDicNew, saveFileGPS)
         saveFileGPS.close()
     
-    def loadGeoGPSDIc(self):
-        gpsFile = open(self.geoGPSFile,"r")
-        self.geoDic = gpsFile.read()
-        dictionary = ast.literal_eval(self.geoDic)
-        gpsFile.close()
+    def loadGeoGPSDic(self):
+        with open(self.geoGPSFile) as f:
+            for line in f:
+                (key, val) = line.split()
+                self.geoDic[key] = val
     
     def generatePathPatternToCopy(self, jsonResult):
         dataDict = dict(jsonResult[0])
@@ -113,7 +116,7 @@ class FileOrganizator:
             newPathFile = goToDir + os.path.sep + pathToCopy + os.path.sep + fileActive
             if self.checkDir(pathToCopy, goToDir):
                 if os.path.isfile(newPathFile):
-                    newPathFileCopy = newPathFile_ + str(int(round(time.time() * 1000)))
+                    newPathFileCopy = newPathFile + "_" + str(int(round(time.time() * 1000)))
                     os.rename(fileMetadataActive, newPathFileCopy)
                 else:
                     os.rename(fileMetadataActive, newPathFile)
