@@ -54,7 +54,7 @@ class FileOrganizator:
         return locationRet
     
     def saveGeoGPSDic(self):
-        saveFileGPS = open("data.pkl", "ab")
+        saveFileGPS = open(self.geoGPSFile, "a")
         pickle.dump(self.geoDicNew, saveFileGPS)
         saveFileGPS.close()
     
