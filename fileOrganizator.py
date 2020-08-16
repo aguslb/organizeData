@@ -116,7 +116,7 @@ class FileOrganizator:
             newPathFile = goToDir + os.path.sep + pathToCopy + os.path.sep + fileActive
             if self.checkDir(pathToCopy, goToDir):
                 if os.path.isfile(newPathFile):
-                    newPathFileCopy = newPathFile + "_" + str(int(round(time.time() * 1000)))
+                    newPathFileCopy = str(int(round(time.time() * 1000))) + "_" + newPathFile
                     os.rename(fileMetadataActive, newPathFileCopy)
                 else:
                     os.rename(fileMetadataActive, newPathFile)
