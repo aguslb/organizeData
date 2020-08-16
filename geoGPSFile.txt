@@ -1,0 +1,5 @@
+20.6192888888889 -103.415511111111:Zapopan_Jalisco_mx
+20.6192916666667 -103.415466666667:Zapopan_Jalisco_mx
+20.7074888888889 -103.32875:Guadalajara_Jalisco_mx
+21.9694888888889 -102.316125:Jesús María_Aguascalientes_mx
+21.96955 -102.316016666667:Jesús María_Aguascalientes_mx

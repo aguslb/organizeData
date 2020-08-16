@@ -50,19 +50,21 @@ class FileOrganizator:
             self.geoDic[GPSPosition] = locationRet 
             self.geoDicNew[GPSPosition] = locationRet
         else:
-            locationRet = self.geoDic[GPSPosition]
+            locationRet = str(self.geoDic[GPSPosition]).strip()
         return locationRet
     
     def saveGeoGPSDic(self):
-        saveFileGPS = open(self.geoGPSFile, "a")
-        pickle.dump(self.geoDicNew, saveFileGPS)
+        with open(self.geoGPSFile,"a") as saveFileGPS:
+            for key, value in self.geoDicNew.items():
+                saveFileGPS.write('%s:%s\n' % (key, value))
         saveFileGPS.close()
     
     def loadGeoGPSDic(self):
         with open(self.geoGPSFile) as f:
             for line in f:
-                (key, val) = line.split()
+                (key, val) = line.split(":")
                 self.geoDic[key] = val
+        f.close
     
     def generatePathPatternToCopy(self, jsonResult):
         dataDict = dict(jsonResult[0])
@@ -114,12 +116,14 @@ class FileOrganizator:
             fileMetadataActive = pathFileOrgParam + os.path.sep + fileActive
             pathToCopy = self.generatePathPatternToCopy(ExifTool().get_metadata(fileMetadataActive))
             newPathFile = goToDir + os.path.sep + pathToCopy + os.path.sep + fileActive
+            if os.path.isfile(newPathFile):
+                index = int(fileActive.rfind(".")) + 1
+                fileType = fileActive[index:]
+                fileName = fileActive[:int(index - 1)]
+                newPathFile = goToDir + os.path.sep + pathToCopy + os.path.sep + fileName + "_COPY_"
+                newPathFile = newPathFile + str(hex(int(round(time.time() * 1000)))).upper() + "." + fileType
             if self.checkDir(pathToCopy, goToDir):
-                if os.path.isfile(newPathFile):
-                    newPathFileCopy = str(int(round(time.time() * 1000))) + "_" + newPathFile
-                    os.rename(fileMetadataActive, newPathFileCopy)
-                else:
-                    os.rename(fileMetadataActive, newPathFile)
+                os.rename(fileMetadataActive, newPathFile)
     
     def compareMD5(self):
         try:
