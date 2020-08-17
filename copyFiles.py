@@ -108,6 +108,3 @@ class CopyFiles(object):
                     sftp.put(pathParam)
         finally:
             sftp.close()
-
-cp = CopyFiles()
-cp.clientExecute()

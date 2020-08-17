@@ -154,6 +154,3 @@ class FileOrganizator:
         #CopyFiles().sendAFile(CopyFiles().getHomeBridgePath() + os.path.sep + CopyFiles().succesFile)
         self.moveAndOrganizeEachFile(CopyFiles().getHomeBridgePath())
         self.saveGeoGPSDic()
-        
-p1 = FileOrganizator(2)
-p1.startFileOrganizator()
