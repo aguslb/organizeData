@@ -5,20 +5,23 @@ import hashlib
 from pathlib import Path
 
 class CopyFiles(object):
-    remoteHomeWin = "C:\\Users\\Agus\\Bridge"
+    remoteHomeWin = "H:\\Bridge"
     remoteHomeUnix = "/Users/agus/Bridge"
     succesFile = "MD5Result.check"
     MD5File = "MD5.check"
-    usrName = "agus"
-    passw = "ajalas"
-    host = "hostname"
+    usrName = "zid_0"
+    privateKey = "/Users/agus/.ssh/id_rsa.fileOrg"
+    host = "hpz220w.local"
     LOCAL_STR = "Local"
+    usrNameMac = "agus"
+    hostMac = "MacBook-Pro-de-Agustin.local"
+    privateKeyToMac = "C:\\Users\\zid_0\\.ssh\\id_rsa.fileOrgW"
 #cliente usara este metodo
 #envia los archivos con SFTP remotamente
     def sendFiles(self, filesParam):
         homepath = self.getHomeBridgePath()
         try:
-            with pysftp.Connection(self.host, username=self.usrName, password=self.passw) as sftp:
+            with pysftp.Connection(self.host, username=self.usrName, private_key=self.privateKey) as sftp:
                 with sftp.cd(self.remoteHomeWin):
                    for activeFile in filesParam:
                        fileTosend = homepath + os.path.sep + activeFile
@@ -42,15 +45,27 @@ class CopyFiles(object):
                 os.remove(resultFilePath)
         listFileDir = self.getListFilesAndDir(homepath)
         for activeDir in listFileDir[1]:
-            try:
-                with py7zr.SevenZipFile(activeDir + '.7z', 'w') as archive:
-                    archive.writeall(homepath + os.path.sep + activeDir, 'base')
-                    listFileDir[0].append(archive.filename)
-            finally:
-                archive.close()
-        self.md5CheckFile(listFileDir[0],"")
+            path7zip = homepath + os.path.sep + activeDir
+            with py7zr.SevenZipFile(str(path7zip + '.7z'), 'w') as archive:
+                archive.writeall(path7zip, 'base')
+            listFileDir[0].append(str(activeDir + '.7z'))
+        self.md5CheckFileL(listFileDir[0],"")
         listFileDir[0].append(self.MD5File)
         self.sendFiles(listFileDir[0])
+
+    def md5CheckFileL(self, listFilesParam, extend):
+        home = self.getHomeBridgePath()
+        homeMD5File = str(home) + str(os.path.sep) + str(self.MD5File) + str(extend)
+        if os.path.exists(homeMD5File):
+            os.remove(homeMD5File)
+        try:
+            with open(str(homeMD5File), "a") as fp:
+                for i in listFilesParam:
+                    activeFile = str(home) + str(os.path.sep) + i
+                    fp.write(str(i) + "," + str(self.createMD5Checksum(activeFile))+"\n")
+                fp.close()
+        finally:
+            fp.close()
 
 #compartido
 #genera un archivo con los MD5 de una lista de archivos
@@ -88,8 +103,11 @@ class CopyFiles(object):
 #el server usara este metodo
     def sendAFile(self, pathParam):
         try:
-            with pysftp.Connection(self.host, username=self.usrName, password=self.passw) as sftp:
+            with pysftp.Connection(self.usrNameMac, username=self.usrNameMac, private_key=self.privateKeyMac) as sftp:
                 with sftp.cd(self.remoteHomeUnix):
                     sftp.put(pathParam)
         finally:
             sftp.close()
+
+cp = CopyFiles()
+cp.clientExecute()
