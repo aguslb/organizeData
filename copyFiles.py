@@ -103,7 +103,7 @@ class CopyFiles(object):
 #el server usara este metodo
     def sendAFile(self, pathParam):
         try:
-            with pysftp.Connection(self.usrNameMac, username=self.usrNameMac, private_key=self.privateKeyMac) as sftp:
+            with pysftp.Connection(self.usrNameMac, username=self.usrNameMac, private_key=self.privateKeyToMac) as sftp:
                 with sftp.cd(self.remoteHomeUnix):
                     sftp.put(pathParam)
         finally:
