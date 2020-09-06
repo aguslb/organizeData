@@ -151,6 +151,6 @@ class FileOrganizator:
         self.loadGeoGPSDic()
         CopyFiles().md5CheckFile(CopyFiles().getListFilesAndDir(CopyFiles().getHomeBridgePath()),CopyFiles().LOCAL_STR)
         self.compareMD5()
-        #CopyFiles().sendAFile(CopyFiles().getHomeBridgePath() + os.path.sep + CopyFiles().succesFile)
+        CopyFiles().sendAFile(CopyFiles().getHomeBridgePath() + os.path.sep + CopyFiles().succesFile)
         self.moveAndOrganizeEachFile(CopyFiles().getHomeBridgePath())
         self.saveGeoGPSDic()
