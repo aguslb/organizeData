@@ -1,7 +1,9 @@
 import os
+import ssl
 import mmap
 import time
 import pysftp
+import certifi
 import hashlib
 import geopy.geocoders
 from pathlib import Path
@@ -20,7 +22,10 @@ class FileOrganizatorServer:
     succesFile = "MD5Result.check"
     remoteHomeUnix = "/Users/agus/Bridge"
     geolocator = Nominatim(user_agent="FileOrganizator")
+    ctx = ssl.create_default_context(cafile=certifi.where())
     privateKeyToMac = "C:\\Users\\zid_0\\.ssh\\id_rsa.fileOrgW"
+
+    geopy.geocoders.options.default_ssl_context = ctx
 
     def __init__(self, errorTimesToTry):
         self.errorTimesToTry = errorTimesToTry
@@ -191,3 +196,12 @@ class FileOrganizatorServer:
             for key, value in self.geoDicNew.items():
                 saveFileGPS.write('%s:%s\n' % (key, value))
         saveFileGPS.close()
+    
+    #start entry point
+    def startFileOrganizator(self):
+        self.loadGeoGPSDic()
+        self.md5CheckFile(self.getListFilesAndDir(self.getHomeBridgePath()),self.LOCAL_STR)
+        self.compareMD5()
+        self.sendAFile(self.getHomeBridgePath() + os.path.sep + self.succesFile)
+        self.moveAndOrganizeEachFile(self.getHomeBridgePath())
+        self.saveGeoGPSDic()
