@@ -5,6 +5,7 @@ import time
 import pysftp
 import certifi
 import hashlib
+import shutil
 import geopy.geocoders
 from pathlib import Path
 from ExifTool import ExifTool
@@ -17,6 +18,7 @@ class FileOrganizatorServer:
     geoDic = {}
     geoDicNew = {}
     usrNameMac = "agus"
+    host = "192.168.0.120"
     LOCAL_STR = "Local"
     MD5File = "MD5.check"
     geoGPSFile = "organizeData/geoGPSFile.txt"
@@ -51,7 +53,7 @@ class FileOrganizatorServer:
     # Send files
     def sendAFile(self, pathParam):
         try:
-            with pysftp.Connection(self.usrNameMac, username=self.usrNameMac, private_key=self.privateKeyToMac) as sftp:
+            with pysftp.Connection(self.host, username=self.usrNameMac, private_key=self.privateKeyToMac) as sftp:
                 with sftp.cd(self.remoteHomeUnix):
                     sftp.put(pathParam)
         finally:
@@ -112,8 +114,10 @@ class FileOrganizatorServer:
                     with open(str(succesFile), "a") as fp:
                         for elementActive in myList:
                             elementActive = elementActive.rstrip("\n")
-                            if s.find(bytes(elementActive,  encoding='utf8')) == -1:
+                            if s.find(bytes(elementActive,  encoding='utf8')) != -1:
                                 fp.write(elementActive)
+        except:
+            print("Error on MD5")
         finally:
             f.close()
             g.close()
@@ -179,7 +183,7 @@ class FileOrganizatorServer:
                     str(hex(int(round(time.time() * 1000)))
                         ).upper() + "." + fileType
             if self.checkDir(pathToCopy, goToDir):
-                os.rename(fileMetadataActive, newPathFile)
+                shutil.move(fileMetadataActive, newPathFile)
 
     # Get GPS Location and create a Path
     def getGPSLocationPath(self, GPSPosition):
@@ -199,7 +203,8 @@ class FileOrganizatorServer:
     # Move and organize all files
     def moveAndOrganizeEachFile(self, pathParam):
         filesAndDir = self.getListFilesAndDir(pathParam)
-        goToDir = str(Path.home()) + os.path.sep + "Organized"
+        #goToDir = str(Path.home()) + os.path.sep + "Organized"
+        goToDir = "D:\\Organized"
         self.fileOrganizator(filesAndDir[0], pathParam, goToDir)
         for activeDir in filesAndDir[1]:
             newPathParam = pathParam + os.path.sep + activeDir

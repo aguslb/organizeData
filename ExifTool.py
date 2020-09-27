@@ -10,7 +10,7 @@ class ExifTool(object):
     def __init__(self):
         if sys.platform.startswith('win32'):
             self.sentinel = "{ready}\r\n"
-            self.executable = "C:\\WINDOWS\\exiftool.exe"
+            self.executable = "C:\\WINDOWS\\exiftool(-k).exe"
         else :
             self.sentinel = "{ready}\n"
             self.executable = "/usr/local/bin/exiftool"
