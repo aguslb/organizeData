@@ -221,3 +221,6 @@ class FileOrganizatorServer:
                        os.path.sep + self.succesFile)
         self.moveAndOrganizeEachFile(self.getHomeBridgePath())
         self.saveGeoGPSDic()
+
+foS = FileOrganizatorServer(2)
+foS.startFileOrganizator()
