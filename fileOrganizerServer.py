@@ -19,7 +19,7 @@ class FileOrganizatorServer:
     usrNameMac = "agus"
     LOCAL_STR = "Local"
     MD5File = "MD5.check"
-    geoGPSFile = "geoGPSFile.txt"
+    geoGPSFile = "organizeData/geoGPSFile.txt"
     succesFile = "MD5Result.check"
     remoteHomeUnix = "/Users/agus/Bridge"
     geolocator = Nominatim(user_agent="FileOrganizator")
@@ -33,7 +33,8 @@ class FileOrganizatorServer:
 
     # Obtiene el home path de Bridge
     def getHomeBridgePath(self):
-        return str(Path.home()) + os.path.sep + "Bridge"
+       # return str(Path.home()) + os.path.sep + "Bridge"
+       return "H:\\Bridge"
 
     # Load file who has all info from GPS
     def loadGeoGPSDic(self):
