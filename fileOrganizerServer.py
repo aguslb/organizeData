@@ -35,8 +35,8 @@ class FileOrganizatorServer:
 
     # Obtiene el home path de Bridge
     def getHomeBridgePath(self):
-       # return str(Path.home()) + os.path.sep + "Bridge"
-       return "H:\\Bridge"
+        # return str(Path.home()) + os.path.sep + "Bridge"
+        return "H:\\Bridge"
 
     # Load file who has all info from GPS
     def loadGeoGPSDic(self):
@@ -218,15 +218,17 @@ class FileOrganizatorServer:
         saveFileGPS.close()
 
     # start entry point
-    def startFileOrganizator(self):
+    def startFileOrganizator(self, copmplete):
         self.loadGeoGPSDic()
-        self.md5CheckFile(self.getListFilesAndDir(
-            self.getHomeBridgePath()), self.LOCAL_STR)
-        self.compareMD5()
-        self.sendAFile(self.getHomeBridgePath() +
-                       os.path.sep + self.succesFile)
+        if copmplete:
+            self.md5CheckFile(self.getListFilesAndDir(
+                self.getHomeBridgePath()), self.LOCAL_STR)
+            self.compareMD5()
+            self.sendAFile(self.getHomeBridgePath() +
+                           os.path.sep + self.succesFile)
         self.moveAndOrganizeEachFile(self.getHomeBridgePath())
         self.saveGeoGPSDic()
 
+
 foS = FileOrganizatorServer(2)
-foS.startFileOrganizator()
+foS.startFileOrganizator(True)
